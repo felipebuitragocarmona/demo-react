@@ -2,8 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import UserOne from '../images/user/user-01.png';
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 const DropdownUser = () => {
+  const user = useSelector((state: RootState) => state.user.user); // Obtener el valor de la variable del usuario
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const trigger = useRef<any>(null);
@@ -45,7 +48,7 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Felipe Buitrago
+          <h2>Bienvenido, {user?.name || "Invitado"}</h2>
           </span>
           <span className="block text-xs">UX Designer</span>
         </span>
