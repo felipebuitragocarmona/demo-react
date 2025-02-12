@@ -10,11 +10,13 @@ import Breadcrumb from "../../components/Breadcrumb";
 
 const UpdateUserPage = () => {
     const { id } = useParams(); // Obtener el ID de la URL
+    
     const navigate = useNavigate();
     const [user, setUser] = useState<User | null>(null);
 
     // Cargar datos del usuario después del montaje
     useEffect(() => {
+        console.log("Id->"+id)
         const fetchUser = async () => {
             if (!id) return; // Evitar errores si el ID no está disponible
             const userData = await getUserById(parseInt(id));
