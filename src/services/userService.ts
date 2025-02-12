@@ -1,4 +1,5 @@
 import { User } from "../models/user";
+import api from "../interceptors/axiosInterceptor";
 
 const API_URL = import.meta.env.VITE_API_URL+"/users"||""; // Reemplaza con la URL real
 
@@ -6,9 +7,8 @@ const API_URL = import.meta.env.VITE_API_URL+"/users"||""; // Reemplaza con la U
 export const getUsers = async (): Promise<User[]> => {
     console.log("aqui "+API_URL)
     try {
-        const response = await fetch(API_URL);
-        if (!response.ok) throw new Error("Error al obtener usuarios");
-        return await response.json();
+        const response = await api.get("/users");
+        return await response.data;
     } catch (error) {
         console.error(error);
         return [];
