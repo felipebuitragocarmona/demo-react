@@ -2386,7 +2386,7 @@ export const getUsers = async () => {
   }
 };
 
-```
+````
 
 ## Guardianes
 
@@ -2487,3 +2487,115 @@ function App() {
 export default App;
 
 ```
+# Sockets
+
+Para implementar un cliente de **Socket.IO** en un proyecto **React** donde el backend envía notificaciones en tiempo real, sigue estos pasos:
+
+---
+
+### **1. Instalar Socket.IO Client**
+En tu proyecto de React, instala la dependencia de `socket.io-client`:
+```sh
+npm install socket.io-client
+```
+
+---
+
+### **2. Configurar el Cliente en React**
+Debes establecer la conexión con el servidor y escuchar los eventos de notificación. Para esto, puedes usar **useEffect** y **useState** en un contexto global o directamente en el componente `Navbar`.
+
+#### **Ejemplo de uso en un Navbar con estado global**  
+```jsx
+import { useEffect, useState } from "react";
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:5000"); // Ajusta la URL de tu backend
+
+const Navbar = () => {
+  const [notifications, setNotifications] = useState(0);
+
+  useEffect(() => {
+    socket.on("new_notification", () => {
+      setNotifications((prev) => prev + 1);
+    });
+
+    return () => {
+      socket.off("new_notification");
+    };
+  }, []);
+
+  return (
+    <nav className="p-4 bg-blue-600 text-white flex justify-between">
+      <h1 className="text-xl">Mi App</h1>
+      <div className="relative">
+        <button className="relative">
+          🔔 Notificaciones
+          {notifications > 0 && (
+            <span className="absolute top-0 right-0 bg-red-500 text-xs px-2 py-1 rounded-full">
+              {notifications}
+            </span>
+          )}
+        </button>
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;
+```
+
+---
+
+### **3. Enviar Notificaciones desde el Backend**
+El backend (Node.js con Express y Socket.IO) debe emitir un evento llamado `"new_notification"` cuando llegue una nueva notificación:
+
+``` py
+from flask import Flask
+from flask_socketio import SocketIO
+import eventlet
+
+app = Flask(__name__)
+socketio = SocketIO(app, cors_allowed_origins="*")
+
+
+@app.route("/")
+def home():
+    return "Socket.IO Server Running"
+
+def send_notifications():
+    contador=0
+    """Función que emite notificaciones cada 5 segundos"""
+    while True:
+        eventlet.sleep(5)  # Espera 5 segundos
+        socketio.emit("new_notification", {"message": "¡Tienes una nueva notificación!"})
+        print("Notificación enviada "+str(contador))
+        contador+=1
+
+@socketio.on("connect")
+def handle_connect():
+    print("Cliente conectado")
+    socketio.start_background_task(send_notifications)
+
+@socketio.on("disconnect")
+def handle_disconnect():
+    print("Cliente desconectado")
+
+if __name__ == "__main__":
+    socketio.run(app, host="0.0.0.0", port=5000, debug=True)
+```
+
+---
+
+### **4. Mejoras Opcionales**
+- **Context API**: Si quieres usarlo en varios componentes, puedes manejar el estado de `notifications` con **Context API**.
+- **Redux**: Si usas Redux, puedes actualizar el estado global con las notificaciones.
+- **Limpieza de Eventos**: Es importante remover los eventos con `socket.off()` en el `useEffect` para evitar fugas de memoria.
+
+---
+
+### **Resumen**
+1. Instala `socket.io-client`.
+2. Conéctate al backend en `useEffect()`.
+3. Escucha el evento `new_notification`.
+4. Actualiza el estado y muestra el contador en el Navbar.
+5. Emite notificaciones desde el backend con `socket.emit("new_notification")`.
