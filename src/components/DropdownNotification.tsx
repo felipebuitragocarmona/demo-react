@@ -1,7 +1,26 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { io } from "socket.io-client";
+
+
+const socket = io("http://localhost:5000");
 
 const DropdownNotification = () => {
+
+  const [notifications, setNotifications] = useState(0);
+  // Notificaciones con Socket
+  useEffect(() => {
+    socket.on("new_notification", () => {
+      setNotifications((prev) => prev + 1);
+    });
+
+    return () => {
+      console.log("nueva notificacion")
+      socket.off("new_notification");
+    };
+  }, []);
+  // Fin Notificaciones
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const trigger = useRef<any>(null);
@@ -32,6 +51,8 @@ const DropdownNotification = () => {
     return () => document.removeEventListener('keydown', keyHandler);
   });
 
+
+
   return (
     <li className="relative">
       <Link
@@ -58,7 +79,12 @@ const DropdownNotification = () => {
           />
         </svg>
       </Link>
-
+      🔔 Notificaciones
+          {notifications > 0 && (
+            <span className="absolute top-0 right-0 bg-red-500 text-xs px-2 py-1 rounded-full">
+              {notifications}
+            </span>
+          )}
       <div
         ref={dropdown}
         onFocus={() => setDropdownOpen(true)}
