@@ -1,5 +1,5 @@
 # 1. Configuración Inicial del proyecto
-1. Descargar plantilla de `https://uideck.com/templates/tailadmin-react`
+1. Descargar plantilla de `https://github.com/felipebuitragocarmona/plantilla-react`
 2. Instalar dependencias
 ``` sh
  npm install
