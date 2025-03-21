@@ -197,35 +197,35 @@ Un prop también puede ser una función que retorne un valor.
 ```tsx
 import React from "react";
 
-interface SumProps {
+interface OperationProps {
   a: number;
   b: number;
   calculate: (x: number, y: number) => number;
 }
 
-const Sum: React.FC<SumProps> = ({ a, b, calculate }) => {
+const Operation: React.FC<OperationProps> = ({ a, b, calculate }) => {
   return <p>Resultado: {calculate(a, b)}</p>;
 };
 
-export default Sum;
+export default Operation;
 ```
 
 #### **Uso del Componente en App.tsx**
 ```tsx
 import React from "react";
-import Sum from "./components/Sum";
+import Operation from "../../components/OperacionMatematica";
 
-const App: React.FC = () => {
+const SumPage: React.FC = () => {
   const addNumbers = (x: number, y: number): number => x + y;
 
   return (
     <div>
-      <Sum a={5} b={3} calculate={addNumbers} />
+      <Operation a={5} b={3} calculate={addNumbers} />
     </div>
   );
 };
 
-export default App;
+export default SumPage;
 ```
 
 🔹 En este ejemplo, el componente `Sum` recibe `a`, `b` y una función `calculate` que realiza la suma.  
