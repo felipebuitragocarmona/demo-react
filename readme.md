@@ -833,6 +833,7 @@ En primer lugar será necesario instalar la siguiente librería que ayudará con
 
 ```
 npm i yup
+npm i formik
 ```
 
 Luego será necesario crear el archivo en la ruta ``src/components/Users/UserFormValidator.tsx`
