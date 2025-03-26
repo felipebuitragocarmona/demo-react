@@ -1231,7 +1231,7 @@ export default new SecurityService();
 
 Ahora en el archivo `src/pages/Authentication/SignIn.tsx`
 
-```
+``` tsx
 import React from "react";
 
 
@@ -1511,7 +1511,7 @@ export default SignIn;
 ```
 Posteriormente para que el nombre del usuario aparezca en el navbar y se active el sidebar es necesario activar el Provider de Redux en el siguiente archivo `src/layout/DefaultLayout.tsx`, esto permitirá que tanto el sidebar como navbar tengan acceso a la variable compartida
 
-````
+```
 import { useState } from 'react';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
@@ -1554,6 +1554,7 @@ const DefaultLayout = () => {
 
 export default DefaultLayout;
 
+```
 ```
 
 Luego en el archivo `src/components/DropdownUser.tsx`, actualizar algunas de las líneas tal como se muestra a continuación
