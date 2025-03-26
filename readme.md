@@ -1555,11 +1555,11 @@ const DefaultLayout = () => {
 export default DefaultLayout;
 
 ```
-```
+
 
 Luego en el archivo `src/components/DropdownUser.tsx`, actualizar algunas de las líneas tal como se muestra a continuación
 
-```
+``` tsx
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
@@ -1580,7 +1580,7 @@ const DropdownUser = () => {
 
 Para ocultar el menú de la izquierda es necesario modificar el archivo `src/components/Sidebar.tsx`, actualizar algunas de las líneas tal como se muestra a continuación
 
-```
+``` tsx
 import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import Logo from '../images/logo/logo.svg';
