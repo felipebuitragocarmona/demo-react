@@ -958,11 +958,11 @@ Ahora será necesario crear los archivos de las páginas para la creación y act
 
 ``` tsx
 import React, { useState } from 'react'; // Asegúrate de importar useState
-import { User } from '../../models/user';
-import UserFormValidator from '../../components/Users/UserFormValidator'; 
+import { User } from '../../models/User';
+import UserFormValidator from '../../components/Users/UserFormValidator';
 
 import Swal from 'sweetalert2';
-import { createUser } from "../../services/userService";
+import { userService } from "../../services/userService";
 import Breadcrumb from '../../components/Breadcrumb';
 import { useNavigate } from "react-router-dom";
 
@@ -975,7 +975,7 @@ const App = () => {
     const handleCreateUser = async (user: User) => {
 
         try {
-            const createdUser = await createUser(user);
+            const createdUser = await userService.createUser(user);
             if (createdUser) {
                 Swal.fire({
                     title: "Completado",
@@ -984,7 +984,7 @@ const App = () => {
                     timer: 3000
                 })
                 console.log("Usuario creado con éxito:", createdUser);
-                navigate("/users");
+                navigate("/users/list");
             } else {
                 Swal.fire({
                     title: "Error",
@@ -1006,29 +1006,31 @@ const App = () => {
         <div>
             {/* Formulario para crear un nuevo usuario */}
             <h2>Create User</h2>
-                <Breadcrumb pageName="Crear Usuario" />
-                <UserFormValidator
-                    handleCreate={handleCreateUser}
-                    mode={1} // 1 significa creación
-                />
+            <Breadcrumb pageName="Crear Usuario" />
+            <UserFormValidator
+                handleCreate={handleCreateUser}
+                mode={1} // 1 significa creación
+            />
         </div>
     );
 };
 
 export default App;
 
+
 ```
 Ahora la actualización es necesario implementar la siguiente lógica:
 
-``` ts
+``` tsx
+
 
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-import { getUserById, updateUser } from "../../services/userService";
+import { userService } from "../../services/userService";
 import Swal from "sweetalert2";
 
-import { User } from '../../models/user';
+import { User } from '../../models/User';
 import UserFormValidator from '../../components/Users/UserFormValidator';
 import Breadcrumb from "../../components/Breadcrumb";
 
@@ -1043,7 +1045,7 @@ const UpdateUserPage = () => {
         console.log("Id->"+id)
         const fetchUser = async () => {
             if (!id) return; // Evitar errores si el ID no está disponible
-            const userData = await getUserById(parseInt(id));
+            const userData = await userService.getUserById(parseInt(id));
             setUser(userData);
         };
 
@@ -1052,7 +1054,7 @@ const UpdateUserPage = () => {
 
     const handleUpdateUser = async (theUser: User) => {
         try {
-            const updatedUser = await updateUser(theUser.id || 0, theUser);
+            const updatedUser = await userService.updateUser(theUser.id || 0, theUser);
             if (updatedUser) {
                 Swal.fire({
                     title: "Completado",
@@ -1060,7 +1062,7 @@ const UpdateUserPage = () => {
                     icon: "success",
                     timer: 3000
                 });
-                navigate("/users"); // Redirección en React Router
+                navigate("/users/list"); // Redirección en React Router
             } else {
                 Swal.fire({
                     title: "Error",
@@ -1096,6 +1098,7 @@ const UpdateUserPage = () => {
 };
 
 export default UpdateUserPage;
+
 ```
 
 # Seguridad
