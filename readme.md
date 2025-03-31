@@ -1163,7 +1163,8 @@ export default userSlice.reducer;
 Ahora será necesario crear el servicio `src/services/securityService.ts` el cual posee el siguiente contenido:
 
 ``` ts
-import { User } from "../models/user";
+import axios from "axios";
+import { User } from "../models/User";
 import { store } from "../store/store";
 import { setUser } from "../store/userSlice";
 
@@ -1171,7 +1172,8 @@ class SecurityService extends EventTarget {
     keySession: string;
     API_URL: string;
     user: User;
-    theAuthProvider:any;
+    theAuthProvider: any;
+    
     constructor() {
         super();
 
@@ -1181,27 +1183,20 @@ class SecurityService extends EventTarget {
         if (storedUser) {
             this.user = JSON.parse(storedUser);
         } else {
-            this.user = {}
+            this.user = {};
         }
     }
 
     async login(user: User) {
-        console.log("llamando api " + `${this.API_URL}/login`)
+        console.log("llamando api " + `${this.API_URL}/login`);
         try {
-
-            const response = await fetch(`${this.API_URL}/login`, {
-                method: 'POST',
+            const response = await axios.post(`${this.API_URL}/login`, user, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(user),
             });
 
-            if (!response.ok) {
-                throw new Error('Login failed');
-            }
-
-            const data = await response.json();
+            const data = response.data;
             localStorage.setItem("user", JSON.stringify(data));
             store.dispatch(setUser(data));
             return data;
@@ -1210,9 +1205,11 @@ class SecurityService extends EventTarget {
             throw error;
         }
     }
+    
     getUser() {
         return this.user;
     }
+    
     logout() {
         this.user = {};
         localStorage.removeItem("user");
