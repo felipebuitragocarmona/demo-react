@@ -2323,7 +2323,7 @@ npm i axios
 
 Luego será necesario crear el siguiente archivo `src/interceptors/axiosInterceptor.ts`
 
-```
+``` tsx
 
 import axios from "axios";
 
@@ -2375,7 +2375,7 @@ export default api;
 
 Luego, en lugar de importar Axios directamente, usa el interceptor en tus servicios.
 
-```
+``` tsx
 import api from "./axiosInterceptor";
 
 export const getUsers = async () => {
@@ -2407,7 +2407,7 @@ Crear el archivo `src/components/Auth/PotectedRoute.tsx`
 ```
 
 Este debe de poseer el siguiente contenido
-```
+``` tsx
 import { Navigate, Outlet } from "react-router-dom";
 
 // Función para verificar si el usuario está autenticado
@@ -2507,7 +2507,7 @@ npm install socket.io-client
 Debes establecer la conexión con el servidor y escuchar los eventos de notificación. Para esto, puedes usar **useEffect** y **useState** en un contexto global o directamente en el componente `Navbar`.
 
 #### **Ejemplo de uso en un Navbar con estado global**  
-```jsx
+``` tsx
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
