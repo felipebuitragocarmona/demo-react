@@ -2551,6 +2551,10 @@ export default Navbar;
 ### **3. Enviar Notificaciones desde el Backend**
 El backend (Node.js con Express y Socket.IO) debe emitir un evento llamado `"new_notification"` cuando llegue una nueva notificación:
 
+``` sh
+pip install flask flask-socketio eventlet
+```
+
 ``` py
 from flask import Flask
 from flask_socketio import SocketIO
