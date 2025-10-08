@@ -596,94 +596,83 @@ VITE_API_URL=https://xxxxxxxxxxx.mock.pstmn.io
 En segundo lugar se realizará la implementación de la clase que servirá como servicio para las comunicaciones externas (apis) el cual debe quedar en la ubicación `src/services/userService.ts`
 
 ``` tsx
-import { User } from "../models/user";
+import axios from "axios";
+import { User } from "../models/User";
 
-const API_URL = import.meta.env.VITE_API_URL+"/users"||""; // Reemplaza con la URL real
+const API_URL = import.meta.env.VITE_API_URL + "/users" || "";
 
-// Obtener todos los usuarios
-export const getUsers = async (): Promise<User[]> => {
-    console.log("aqui "+API_URL)
-    try {
-        const response = await fetch(API_URL);
-        if (!response.ok) throw new Error("Error al obtener usuarios");
-        return await response.json();
-    } catch (error) {
-        console.error(error);
-        return [];
+class UserService {
+    async getUsers(): Promise<User[]> {
+        try {
+            const response = await axios.get<User[]>(API_URL);
+            return response.data;
+        } catch (error) {
+            console.error("Error al obtener usuarios:", error);
+            return [];
+        }
     }
-};
 
-// Obtener un usuario por ID
-export const getUserById = async (id: number): Promise<User | null> => {
-    try {
-        const response = await fetch(`${API_URL}/${id}`);
-        if (!response.ok) throw new Error("Usuario no encontrado");
-        return await response.json();
-    } catch (error) {
-        console.error(error);
-        return null;
+    async getUserById(id: number): Promise<User | null> {
+        try {
+            const response = await axios.get<User>(`${API_URL}/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error("Usuario no encontrado:", error);
+            return null;
+        }
     }
-};
 
-// Crear un nuevo usuario
-export const createUser = async (user: Omit<User, "id">): Promise<User | null> => {
-    try {
-        const response = await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(user),
-        });
-        if (!response.ok) throw new Error("Error al crear usuario");
-        return await response.json();
-    } catch (error) {
-        console.error(error);
-        return null;
+    async createUser(user: Omit<User, "id">): Promise<User | null> {
+        try {
+            const response = await axios.post<User>(API_URL, user);
+            return response.data;
+        } catch (error) {
+            console.error("Error al crear usuario:", error);
+            return null;
+        }
     }
-};
 
-// Actualizar usuario
-export const updateUser = async (id: number, user: Partial<User>): Promise<User | null> => {
-    try {
-        const response = await fetch(`${API_URL}/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(user),
-        });
-        if (!response.ok) throw new Error("Error al actualizar usuario");
-        return await response.json();
-    } catch (error) {
-        console.error(error);
-        return null;
+    async updateUser(id: number, user: Partial<User>): Promise<User | null> {
+        try {
+            const response = await axios.put<User>(`${API_URL}/${id}`, user);
+            return response.data;
+        } catch (error) {
+            console.error("Error al actualizar usuario:", error);
+            return null;
+        }
     }
-};
 
-// Eliminar usuario
-export const deleteUser = async (id: number): Promise<boolean> => {
-    try {
-        const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-        if (!response.ok) throw new Error("Error al eliminar usuario");
-        return true;
-    } catch (error) {
-        console.error(error);
-        return false;
+    async deleteUser(id: number): Promise<boolean> {
+        try {
+            await axios.delete(`${API_URL}/${id}`);
+            return true;
+        } catch (error) {
+            console.error("Error al eliminar usuario:", error);
+            return false;
+        }
     }
-};
+}
+
+// Exportamos una instancia de la clase para reutilizarla
+export const userService = new UserService();
 
 ```
 
 A continuación será necesario crear la componente de visualización en la ruta `src/app/pages/components/Users/ListUsers.tsx`:
 ```tsx
 import { Eye, Edit, Trash2 } from "lucide-react";
+import Swal from "sweetalert2";
+
 import { useState, useEffect } from "react";
 
-import { getUsers, deleteUser } from "../../services/userService";
-import Swal from "sweetalert2";
-import { User } from "../../models/user";
+import { userService } from "../../services/userService";
 
+import { User } from "../../models/User";
+import { useNavigate } from "react-router-dom";
+import Breadcrumb from "../../components/Breadcrumb";
 
 const ListUsers = () => {
-
-
+    const navigate = useNavigate();
     // Estado para almacenar los datos del JSON
     const [data, setData] = useState<User[]>([]);
 
@@ -694,7 +683,7 @@ const ListUsers = () => {
 
     // 🔹 Obtiene los datos de los usuarios
     const fetchData = async () => {
-        const users = await getUsers();
+        const users = await  userService.getUsers();
         setData(users);
     };
 
@@ -708,7 +697,7 @@ const ListUsers = () => {
 
     const handleEdit = (id: number) => {
         console.log(`Editar registro con ID: ${id}`);
-
+        navigate("/users/update/" + id);
         // Lógica para editar el registro
     };
 
@@ -725,7 +714,7 @@ const ListUsers = () => {
             cancelButtonText: "No"
         }).then(async (result) => {
             if (result.isConfirmed) {
-                const success = await deleteUser(id);
+                const success = await  userService.deleteUser(id);
                 if (success) {
                     Swal.fire({
                         title: "Eliminado",
@@ -740,6 +729,7 @@ const ListUsers = () => {
     };
 
     return (
+    <Breadcrumb pageName="Usuarios" />
         <div className="grid grid-cols-1 gap-9">
             <div className="flex flex-col gap-9">
                 {/* <!-- Input Fields --> */}
@@ -805,7 +795,7 @@ const ListUsers = () => {
                 </div>
             </div>
         </div>
-
+    </>
     );
 };
 
@@ -813,21 +803,6 @@ export default ListUsers;
 
 ```
 Crear carpeta en la ruta `src/app/pages/Users` y dentro de esta el archivo `page.tsx`
-
-```tsx
-import ListUsers from "../../components/Users/ListUsers";
-import Breadcrumb from "../../components/Breadcrumb";
-const List = () => {
-    return (
-        <>
-            <Breadcrumb pageName="Usuarios" />
-            <ListUsers />
-        </>
-    );
-};
-export default List;
-```
-
 ## Creación y Actualización con Validaciones
 En primer lugar será necesario instalar la siguiente librería que ayudará con las validaciones:
 
